@@ -2,10 +2,10 @@ import express, { Request, Response, NextFunction } from 'express';
 import 'express-async-errors';
 import cors from 'cors';
 
-import { AuthorizationError, AppError } from './errors';
-import uploadConfig from './config/upload';
+import uploadConfig from '@config/upload';
+import { AuthorizationError, AppError } from '@shared/errors';
 import routes from './routes';
-import './database';
+import '@shared/infra/typeorm';
 
 const app = express();
 
