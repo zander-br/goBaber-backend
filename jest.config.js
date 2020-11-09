@@ -7,4 +7,13 @@ module.exports = {
   preset: 'ts-jest',
   testMatch: ['**/*.spec.ts'],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/' }),
+  collectCoverage: true,
+  collectCoverageFrom: [
+    '<rootDir>/src/modules/**/services/*.ts'
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: [
+    "text-summary",
+    "lcov",
+  ],
 };
