@@ -38,12 +38,22 @@ describe('ResetPassword', () => {
     expect(genereteHashSpy).toHaveBeenCalledWith('654321');
   });
 
-  it('should not be able tp reset the password with non-existing token', async () => {
+  it('should not be able to reset the password with non-existing token', async () => {
     expect(
       resetPassword.execute({
         token: 'non-existing-token',
         password: '123456',
       }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('should not be able to reset the password with non-existing user', async () => {
+    const { token } = await fakeUserTokensRepository.generate(
+      'non-existing-user',
+    );
+
+    await expect(
+      resetPassword.execute({ token, password: '123456' }),
     ).rejects.toBeInstanceOf(AppError);
   });
 });
