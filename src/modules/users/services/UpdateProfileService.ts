@@ -51,7 +51,16 @@ class UpdateProfileService {
       );
     }
 
-    if (password) {
+    if (password && old_password) {
+      const checkOldPassword = await this.hashProvider.compareHash(
+        old_password,
+        user.password,
+      );
+
+      if (!checkOldPassword) {
+        throw new AppError('Old password does not match.');
+      }
+
       user.password = await this.hashProvider.generateHash(password);
     }
 
