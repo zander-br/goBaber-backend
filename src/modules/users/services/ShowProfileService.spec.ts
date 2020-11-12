@@ -1,3 +1,4 @@
+import { AppError } from '@shared/errors';
 import FakeUsersRepository from '../repositories/fakes/FakeUsersRepository';
 import ShowProfileService from './ShowProfileService';
 
@@ -23,5 +24,11 @@ describe('ShowProfile', () => {
 
     expect(profile.name).toBe('John Doe');
     expect(profile.email).toBe('johndoe@example.com');
+  });
+
+  it('should not be able show the profile from non-existing user', async () => {
+    await expect(
+      showProfileService.execute({ user_id: 'non-existing-user-id' }),
+    ).rejects.toBeInstanceOf(AppError);
   });
 });
