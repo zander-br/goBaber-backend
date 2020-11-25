@@ -7,14 +7,16 @@ import cors from 'cors';
 import { errors } from 'celebrate';
 
 import uploadConfig from '@config/upload';
-import { AuthorizationError, AppError } from '@shared/errors';
+import { AuthorizationError, AppError, ManyRequestError } from '@shared/errors';
 import routes from './routes';
 
 import '@shared/infra/typeorm';
 import '@shared/container';
+import rateLimiter from './middlewares/rateLimiter';
 
 const app = express();
 
+app.use(rateLimiter);
 app.use(cors());
 app.use(express.json());
 app.use('/files', express.static(uploadConfig.uploadsFolder));
@@ -23,7 +25,11 @@ app.use(routes);
 app.use(errors());
 
 app.use((err: Error, request: Request, response: Response, _: NextFunction) => {
-  if (err instanceof AuthorizationError || err instanceof AppError) {
+  if (
+    err instanceof AuthorizationError ||
+    err instanceof AppError ||
+    err instanceof ManyRequestError
+  ) {
     return response.status(err.statusCode).json({
       status: 'error',
       message: err.message,
