@@ -4,6 +4,7 @@ import { AuthorizationError } from '@shared/errors';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import User from '@modules/users/infra/typeorm/entities/User';
 import IStorageProvider from '@shared/container/providers/StorageProvider/models/IStorageProvider';
+import ICacheProvider from '@shared/container/providers/CacheProvider/models/ICacheProvider';
 
 interface IRequest {
   user_id: string;
@@ -18,6 +19,9 @@ class UpdateUserAvatarService {
 
     @inject('StorageProvider')
     private readonly storageProvider: IStorageProvider,
+
+    @inject('CacheProvider')
+    private readonly cacheProvider: ICacheProvider,
   ) {}
 
   public async execute({ user_id, avatarFilename }: IRequest): Promise<User> {
@@ -37,6 +41,8 @@ class UpdateUserAvatarService {
 
     user.avatar = filename;
     await this.usersRepository.save(user);
+
+    await this.cacheProvider.invalidatePrefix('providers-list');
 
     return user;
   }
